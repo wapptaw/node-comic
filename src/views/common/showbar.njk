@@ -1,0 +1,28 @@
+<header class="show-header">
+  <section class="top-bar">
+    <div class="left-bar">
+      <img class="logo-img" src="{{logoImg}}" alt="logo">
+      <h3 class="title">贝纳洛斯看不懂漫画</h3>
+    </div>
+  </section>
+  <section class="show-bar">
+    <img class="show-img" src="{{showImg}}" alt="show">
+  </section>
+  <section class="bottom-bar">
+    <nav class="nav-bar">
+      <ul class="ul-nav">
+        {% for item in nav %}
+        <li class="li-nav">
+          <a class="a-nav" href="{{item.url}}">{{item.name}}</a>
+        </li>
+        {% endfor %}
+      </ul>
+    </nav>
+    <div class="search-bar">
+      <form class="search-form" action="/search">
+        <input class="input-bar" type="text" name="searchval">
+        <input class="submit-bar" type="submit" value="搜索">
+      </form>
+    </div>
+  </section>
+</header>

@@ -1,0 +1,32 @@
+{% from "./common/macro/falls.njk" import falls as createFalls %}
+
+{% extends "./index.html" %}
+{% block style %}
+  <link rel="stylesheet" href="/static/css/showbar.css">
+  <link rel="stylesheet" href="/static/css/falls.css">
+  <link rel="stylesheet" href="/static/css/category.css">
+{% endblock %}
+{% block section %}
+  <section class="category">
+    <section class="side-left">
+      <header class="comic-header">
+        <div class="sort-title">排序</div>
+        <ul class="ul-sort">
+          {% for item in sortTag %}
+          <li class="li-sort{{' selected' if item.type === sort else ''}}">
+            <a class="a-sort" href="/category?kind={{kind}}&sort={{item.type}}">{{item.name}}</a>
+          </li>
+          {% endfor %}
+        </ul>
+      </header>
+      {{createFalls(comicBooks)}}
+    </section>
+    <ul class="side-right">
+      {% for item in kinds %}
+      <li class="kind{{' selected' if item.name === kind else ''}}">
+        <a class="a-kind" href="/category?kind={{item.name}}&sort={{sort}}">{{item.name}}</a>
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+{% endblock %}

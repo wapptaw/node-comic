@@ -1,0 +1,23 @@
+.li-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: .3rem;
+}
+.top-left {
+  display: flex;
+  align-items: center;
+}
+.top-left > .ranking {
+  font-size: .12rem;
+  color: #3694b9;
+}
+.top-left > .name {
+  margin-left: .1rem;
+  font-size: .14rem;
+  color: #2c2c2c;
+}
+.top-right {
+  font-size: .12rem;
+  color: #afafaf;
+}

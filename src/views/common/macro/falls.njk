@@ -1,0 +1,15 @@
+{% from "./tags.njk" import tag as createTag %}
+
+{% macro falls(comicBooks = []) %}
+<ul class="ul-comic">
+  {% for item in comicBooks %}
+  <li class="li-comic">
+    <a class="a-comic" href="/info?id={{item.id}}">
+      <img class="comic-cover" src="{{item.imgurl}}" alt="item.name">
+      <div class="comic-name">{{item.name}}</div>
+      <div class="comic-tags">{{createTag(item.tag)}}</div>
+    </a>
+  </li>
+  {% endfor %}
+</ul>
+{% endmacro %}

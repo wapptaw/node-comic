@@ -1,0 +1,28 @@
+.ul-comic {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+.li-comic {
+  margin-left: .2rem; 
+  text-align: center;
+}
+.li-comic:first-child {
+  margin-left: 0;
+}
+.comic-cover {
+  display: block;
+  width: 1.5rem;
+  height: 2rem;
+  border-radius: 5px;
+}
+.comic-name {
+  font-size: .15rem;
+  line-height: .3rem;
+  color: #3a3a3a;
+}
+.comic-tags {
+  font-size: .12rem;
+  line-height: .2rem;
+  color: #686868;
+}

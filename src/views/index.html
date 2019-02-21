@@ -1,0 +1,38 @@
+{% from "./common/macro/falls.njk" import falls as createFalls %}
+{% from "./common/macro/top.njk" import top as createTop %}
+
+{% extends "./common/base.html" %}
+{% block style %}
+<link rel="stylesheet" href="/static/css/showbar.css">
+<link rel="stylesheet" href="/static/css/index.css">
+<link rel="stylesheet" href="/static/css/falls.css">
+<link rel="stylesheet" href="/static/css/top.css">
+{% endblock %}
+{% block header %}
+{% include "./common/showbar.njk" %}
+{% endblock %}
+{% block section %}
+<section class="comic-main">
+  {% for item in category %}
+  <section class="comic-show">
+    <section class="left-side">
+      <header class="category-header">
+        <div class="category-name">{{item.categoryName}}</div>
+        <a class="a-more" href="/category?kind={{item.categoryName}}">更多</a>
+      </header>
+      {{createFalls(item.comicBooks)}}
+    </section>
+    <section class="right-side">
+      <header class="top-header">
+        <div class="top-name">{{item.topName}}</div>
+        <a class="a-more" href="/top?topType={{item.topName}}">更多</a>
+      </header>
+      {{createTop(item.tops)}}
+    </section>
+  </section>
+  {% endfor %}
+</section>
+{% endblock %}
+{% block footer %}
+<footer>底部没想好放啥</footer>
+{% endblock %}

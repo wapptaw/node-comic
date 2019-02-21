@@ -1,0 +1,29 @@
+{% extends "./index.html" %}
+{% block style %}
+  <link rel="stylesheet" href="/static/css/showbar.css">
+{% endblock %}
+{% block section %}
+<section>
+  <ul>
+    {% for item in rankName %}
+    <li>
+      <a>{{item.name}}</a>
+    </li>
+    {% endfor %}
+  </ul>
+  <ul>
+    {% for item in rankName %}
+    <li>
+      <div>{{item.name}}</div>
+      <ul>
+        {% for list in item.topList %}
+        <li>
+          <a>{{list.name}}</a>
+        </li>
+        {% endfor %}
+      </ul>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends "./index.html" %}
+{% block style %}
+  <link rel="stylesheet" href="/static/css/showbar.css">
+{% endblock %}
+{% block section %}
+<section class="comic-left">
+  <section>
+    <div>
+      <img src="" alt="cover">
+      <div>
+        <div>名字</div>
+        <div></div>
+        <p>简介</p>
+      </div>
+    </div>
+    <div>
+      <div></div>
+      <div>
+        <button>开始阅读</button>
+        <button>订阅收藏</button>
+      </div>
+    </div>
+  </section>
+  <section>
+    <header>章节列表</header>
+    <ul>
+      {% for item in chapter %}
+      <li></li>
+      {% endfor %}
+    </ul>
+  </section>
+  <section>
+    <header>还看过</header>
+    
+  </section>
+  <section>评论</section>
+</section>
+<section class="comic-right">
+  <div>作者信息</div>
+  <div>
+    <header>同类推荐</header>
+  </div>
+  <div>
+    <header>人气排行</header>
+  </div>
+</section>
+{% endblock %}

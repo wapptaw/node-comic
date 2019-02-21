@@ -1,0 +1,28 @@
+html {
+  font-size: 100px;
+}
+body {
+  font: 12px/150% Tahoma,Helvetica,Arial,Verdana,"Microsoft YaHei","SimSun","宋体";
+}
+html, body, div, section, header, footer, form, input, p, img, ul, li, h1, h2, h3, h4, h5, h6, a, span {
+  margin: 0;
+  padding: 0;
+}
+ul, li {
+  list-style: none;
+}
+input {
+  border: 0;
+  outline: 0;
+  box-sizing: border-box;
+}
+img {
+  border: 0;
+  vertical-align: middle;
+}
+form {
+  font-size: 0;
+}
+a {
+  text-decoration: none;
+}

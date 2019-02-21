@@ -1,0 +1,37 @@
+.comic-main {
+  padding: 0 5%;
+}
+.comic-show {
+  display: flex;
+  justify-content: space-between;
+}
+.left-side {
+  width: 75%;
+}
+.category-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: .6rem;
+}
+.category-name {
+  font-size: .2rem;
+  color: #353535;
+}
+.right-side {
+  width: 20%;
+}
+.top-header {
+  display: flex;
+  justify-content: space-between;;
+  align-items: center;
+  height: .6rem;
+}
+.top-name {
+  font-size: .18rem;
+  color: #353535;
+}
+.a-more {
+  font-size: .12rem;
+  color: #353535;
+}

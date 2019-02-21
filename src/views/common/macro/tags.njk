@@ -1,0 +1,6 @@
+{% macro tag(items = []) %}
+  {% set slash = joiner('/') %}
+  {% for item in items -%}
+  {{slash()}}{{item}}
+  {%- endfor %}
+{% endmacro %}

@@ -1,0 +1,13 @@
+{% macro top(tops = []) %}
+<ul class="ul-top">
+  {% for item in tops %}
+  <li class="li-top">
+    <a class="top-left" href="/comicbook?name={{item.name}}">
+      <span class="ranking">{{loop.index}}</span>
+      <span class="name">{{item.name}}</span>
+    </a>
+    <a class="top-right" href="/category?category={{item.cate}}">{{item.cate}}</a>
+  </li>
+  {% endfor %}
+</ul>
+{% endmacro %}
