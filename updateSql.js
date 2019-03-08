@@ -1,6 +1,8 @@
 const fs = require('fs')
 const path = require('path')
+const crypto = require('crypto')
 const Pool = require('./core/pool')
+const basePath = path.resolve(__dirname, 'lib')
 
 var myPool = new Pool({
   connectionLimit: 10,
@@ -9,106 +11,217 @@ var myPool = new Pool({
   password: '123456',
   database: 'comicbooks'
 })
-// 创建表
-let imgCreateSql = `create table if not exists img
-(
-  Id int PRIMARY KEY AUTO_INCREMENT,
-  Name varchar(255) NOT NULL,
-  Src varchar(255) NOT NULL
-)`
-let comicCreateSql = `create table if not exists comic
-(
-  Id int AUTO_INCREMENT,
-  Name varchar(40) NOT NULL,
-  Type varchar(10),
-  Src varchar(255) NOT NULL,
-  Info varchar(255) DEFAULT '漫画无简介。',
-  Author varchar(40) DEFAULT '未知',
-  primary key(Id)
-)`
-let chapterCreateSql = `create table if not exists ??
-(
-  Index int AUTO_INCREMENT,
-  Name varchar(40) NOT NULL,
-  ComicId varchar(20) NOT NULL,
-  ChapterName varchar(40) NOT NULL,
-  primary key(Index)
-)`
-// 插入数据
-let imgInsertSql = `insert into img (Name, Src)
-values ?`
-let comicInsertSql = `insert into comic (Name, Src)
-values ?`
-// 清空表内数据
-let imgTruncateSql = `truncate table img`
-let comicTruncateSql = `truncate table comic`
 
 // 读取文件夹
-async function readdir (path) {
-  return new Promise((resolve, reject) => {
-    fs.readdir(path, (err, data) => {
-      if (err) {
-        reject(err)
-      } else {
-        resolve(data)
-      }
+async function readdir (path, {encoding='utf8', withFileTypes=false} = {}) { // 默认值写的有问题
+  try {
+    return new Promise((resolve, reject) => {
+      fs.readdir(path, {encoding, withFileTypes}, (err, data) => {
+        if (err) {
+          reject(err)
+        } else {
+          resolve(data)
+        }
+      })
     })
-  })
+  } catch (e) {
+    throw new Error(e)
+  }
+}
+// 读取文件
+async function readFile (path) {
+  try {
+    return new Promise((resolve, reject) => {
+      fs.readFile(path, 'utf8', (err, data) => {
+        if (err) {
+          console.log(path + '不存在')
+          reject(err)
+        } else {
+          resolve(data)
+        }
+      })
+    })
+  } catch (e) {
+    throw new Error(e)
+  }
+}
+// 重命名
+async function rename (oldPath, newPath) {
+  try {
+    return new Promise((resolve, reject) => {
+      fs.rename(oldPath, newPath, err => {
+        if (err) {
+          console.log(oldPath + '重命名失败')
+          reject(err)
+        } else {
+          resolve()
+        }
+      })
+    })
+  } catch (e) {
+    throw new Error(e)
+  }
+}
+// 创建表并插入数据
+async function createInsert (connection, {createSql, insertSql}, name, values) {
+  try {
+    await myPool.query(connection, createSql, [name])
+    await myPool.query(connection, insertSql, [name, values])
+  } catch(e) {
+    throw new Error(e)
+  }
+}
+// 获取一个不重复的随机字符串
+function randomStr (array) {
+  let newStr = ''
+  while(array.includes(newStr) || newStr === '') {
+    newStr = crypto.randomBytes(8).toString('hex')
+  }
+  return newStr
+}
+// 改名并返回新名列表
+async function comicRename (comicPath) {
+  try {
+    let dirs = [], renames = []
+    let comicDirs = await readdir(comicPath)
+    for (let d of comicDirs) {
+      let newName = randomStr(dirs)
+      dirs.push(newName)
+      renames.push(rename(path.join(comicPath, d), path.join(comicPath, newName)))
+    }
+    await Promise.all(renames)
+    return dirs
+  } catch (e) {
+    throw new Error(e)
+  }
 }
 
-async function createPool () {
+async function createPool (connection) {
   try {
-    // 链接数据库、读取文件
-    let result_1 = await Promise.all([
-      myPool.getConnection(), readdir('./lib/img'),
-      readdir('./lib/comic')
-    ]).catch(e => {
-      throw new Error(e)
-    })
-    let connection = result_1[0]
-        imgData = result_1[1]
-        comicData = result_1[2]
-    
-    // 创建表
-    await Promise.all([
-      myPool.query(connection, imgCreateSql),
-      myPool.query(connection, comicCreateSql)
-    ]).catch(e => {
+    // img表的创建和插入
+    async function imgCreateInsert (connection, basePath) {
+      try {
+        let imgPath = path.join(basePath, 'img')
+        let imgFiles = await readdir(imgPath)
+        let values = imgFiles.map(f => {
+          let name = /^.*(?=\..*$)/.exec(f)[0]
+          let src = path.resolve(imgPath, f)
+          return [name, src]
+        })
+        createInsert(connection, {
+          createSql: `create table ??
+          (
+            imgId int primary key auto_increment,
+            imgName varchar(40) not null,
+            imgSrc varchar(255) not null,
+            unique(imgName)
+          )`,
+          insertSql: `insert into ?? (imgName, imgSrc)
+          values ?`
+        }, 'web_img', values)
+      } catch (e) {
         throw new Error(e)
-    })
-    
-    // 清空原表内容
-    await Promise.all([
-      myPool.query(connection, imgTruncateSql),
-      myPool.query(connection, comicTruncateSql)
-    ]).catch(e => {
-      throw new Error(e)
-    })
-
-    // 插入表内容
-    function valuesGet (pathSlice, data, callback) { // 获取values
-      let values = []
-      let basePath = path.resolve(__dirname, pathSlice)
-      for (let v of data) {
-        let pathSingle = path.resolve(basePath, v)
-        let result = callback(v)
-        let value = [...result, pathSingle]
-        values.push(value)
       }
-      return values
+    }
+    // comic表的创建和插入
+    async function comicCreateInsert (connection, basePath) {
+      try {
+        let comicPath = path.join(basePath, 'comic')
+        let dirs = await comicRename(comicPath)
+        async function valuesGet (d) { // 获取values值的promise对象数组
+          chapterCreateInsert(connection, comicPath, d)
+          let currentComicPath = path.join(comicPath, d)
+          let data = await readFile(path.join(currentComicPath, 'info.json'))
+          let info = JSON.parse(data)
+          return [d, info.name, info.type, info.intro, info.author, info.cover, currentComicPath]
+        }
+        let values = await Promise.all(dirs.map(d => valuesGet(d)))
+        createInsert(connection, {
+          createSql: `create table ??
+          (
+            comicId int primary key auto_increment,
+            comicKey varchar(16) unique,
+            comicName varchar(40) not null,
+            comicType varchar(10),
+            comicSrc varchar(255) not null,
+            comicIntro varchar(255) default '无简介。',
+            comicAuthor varchar(40) default '未知',
+            comicCover varchar(255)
+          )`,
+          insertSql: `insert into ?? (comicKey, comicName, comicType, comicIntro, comicAuthor, comicCover, comicSrc)
+          values ?`
+        }, 'web_comic', values)
+      } catch(e) {
+        throw new Error(e)
+      }
     }
 
-    let imgValues = valuesGet('./lib/img', imgData, v => [/^.*(?=\..*$)/.exec(v)[0]])
-    let comicValues = valuesGet('./lib/comic', comicData, v => [v])
+    // chapter表创建和插入
+    async function chapterCreateInsert (connection, comicPath, id) {
+      try {
+        let currentComicPath = path.join(comicPath, id)
+        let dirs = await readdir(currentComicPath, {withFileTypes: true})
+        let values = []
+        dirs.forEach((d, i) => {
+          if (d.isDirectory()) {
+            comicPageCreateInsert(connection, currentComicPath, d.name, id, i + 1)
+            values.push([id, d.name])
+          }
+        })
+        createInsert(connection, {
+          createSql: `create table ??
+          (
+            chapterId int primary key auto_increment,
+            comicKey varchar(16),
+            chapterName varchar(40) not null unique
+          )`,
+          insertSql: `insert into ?? (comicKey, chapterName)
+          values ?`
+        }, id + '_chapter', values)
+      } catch (e) {
+        throw new Error(e)
+      }
+    }
+    // comicPage表创建和插入
+    async function comicPageCreateInsert (connection, currentComicPath, chapter, id, index) {
+      try {
+        let chapterPath = path.join(currentComicPath, chapter)
+        let data = await readdir(chapterPath)
+        let values = data.map(f => {
+          let name = /^.*(?=\..*$)/.exec(f)[0]
+          let src = path.join(chapterPath, f)
+          return [id, name, src, chapter]
+        })
+        createInsert(connection, {
+          createSql: `create table ??
+          (
+            comicPageId int primary key auto_increment,
+            comicKey varchar(16),
+            comicPageName varchar(20) not null unique,
+            comicPageSrc varchar(255) not null,
+            comicPageChapter varchar(30) not null
+          )`,
+          insertSql: `insert into ?? (comicKey, comicPageName, comicPageSrc, comicPageChapter)
+          values ?`
+        },  id + '_' + index + '_comicPage', values)
+      } catch(e) {
+        throw new Error(e)
+      }
+    }
 
-    await Promise.all([
-      myPool.query(connection, imgInsertSql, [imgValues]),
-      myPool.query(connection, comicInsertSql, [comicValues])
-    ])
-
+    imgCreateInsert(connection, basePath)
+    comicCreateInsert(connection, basePath)
   } catch (err) {
     console.log(err)
   }
 }
 
-createPool()
+myPool.getConnection().then(connection => {
+  createPool(connection)
+  return connection
+}).then(connection => {
+  myPool.end(connection)
+}).catch (e => {
+  throw new Error(e)
+})
+

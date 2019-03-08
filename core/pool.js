@@ -39,13 +39,8 @@ class Pool {
     }
   }
 
-  end () { // 关闭
-    this.pool.end(err => {
-      if (err) {
-        console.log('关闭连接池出错：' + err.message)
-      }
-      console.log('关闭连接池成功')
-    })
+  end (connection) { // 关闭
+    connection.release()
   }
 }
 
