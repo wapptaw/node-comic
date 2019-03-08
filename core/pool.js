@@ -41,6 +41,7 @@ class Pool {
 
   end (connection) { // 关闭
     connection.release()
+    console.log('断开连接')
   }
 }
 

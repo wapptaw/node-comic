@@ -196,12 +196,12 @@ async function createPool (connection) {
           createSql: `create table ??
           (
             comicPageId int primary key auto_increment,
-            comicKey varchar(16),
+            comicKey varchar(16) ,
             comicPageName varchar(20) not null unique,
             comicPageSrc varchar(255) not null,
-            comicPageChapter varchar(30) not null
+            chapterName varchar(30) not null
           )`,
-          insertSql: `insert into ?? (comicKey, comicPageName, comicPageSrc, comicPageChapter)
+          insertSql: `insert into ?? (comicKey, comicPageName, comicPageSrc, chapterName)
           values ?`
         },  id + '_' + index + '_comicPage', values)
       } catch(e) {
@@ -224,4 +224,3 @@ myPool.getConnection().then(connection => {
 }).catch (e => {
   throw new Error(e)
 })
-
