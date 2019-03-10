@@ -13,7 +13,7 @@ var myPool = new Pool({
 })
 
 // 读取文件夹
-async function readdir (path, {encoding='utf8', withFileTypes=false} = {}) { // 默认值写的有问题
+function readdir (path, {encoding='utf8', withFileTypes=false} = {}) { // 默认值写的有问题
   try {
     return new Promise((resolve, reject) => {
       fs.readdir(path, {encoding, withFileTypes}, (err, data) => {
@@ -29,7 +29,7 @@ async function readdir (path, {encoding='utf8', withFileTypes=false} = {}) { // 
   }
 }
 // 读取文件
-async function readFile (path) {
+function readFile (path) {
   try {
     return new Promise((resolve, reject) => {
       fs.readFile(path, 'utf8', (err, data) => {
@@ -46,7 +46,7 @@ async function readFile (path) {
   }
 }
 // 重命名
-async function rename (oldPath, newPath) {
+function rename (oldPath, newPath) {
   try {
     return new Promise((resolve, reject) => {
       fs.rename(oldPath, newPath, err => {
@@ -108,7 +108,7 @@ async function createPool (connection) {
           let src = path.resolve(imgPath, f)
           return [name, src]
         })
-        createInsert(connection, {
+        await createInsert(connection, {
           createSql: `create table ??
           (
             imgId int primary key auto_increment,
@@ -129,14 +129,22 @@ async function createPool (connection) {
         let comicPath = path.join(basePath, 'comic')
         let dirs = await comicRename(comicPath)
         async function valuesGet (d) { // 获取values值的promise对象数组
-          chapterCreateInsert(connection, comicPath, d)
           let currentComicPath = path.join(comicPath, d)
           let data = await readFile(path.join(currentComicPath, 'info.json'))
           let info = JSON.parse(data)
           return [d, info.name, info.type, info.intro, info.author, info.cover, currentComicPath]
         }
-        let values = await Promise.all(dirs.map(d => valuesGet(d)))
-        createInsert(connection, {
+        let valueGroup = []
+        let chapters = []
+        for (let d of dirs) {
+          let chapter = chapterCreateInsert(connection, comicPath, d)
+          let value = valuesGet(d)
+          chapters.push(chapter)
+          valueGroup.push(value)
+        }
+        let allChapter = Promise.all(chapters) // 章节promise组
+        values = await Promise.all(valueGroup)
+        let createInsertPromise = createInsert(connection, {
           createSql: `create table ??
           (
             comicId int primary key auto_increment,
@@ -151,6 +159,7 @@ async function createPool (connection) {
           insertSql: `insert into ?? (comicKey, comicName, comicType, comicIntro, comicAuthor, comicCover, comicSrc)
           values ?`
         }, 'web_comic', values)
+        await Promise.all([allChapter, createInsertPromise])
       } catch(e) {
         throw new Error(e)
       }
@@ -161,14 +170,16 @@ async function createPool (connection) {
       try {
         let currentComicPath = path.join(comicPath, id)
         let dirs = await readdir(currentComicPath, {withFileTypes: true})
-        let values = []
+        let values = [], comicPages = []
         dirs.forEach((d, i) => {
           if (d.isDirectory()) {
-            comicPageCreateInsert(connection, currentComicPath, d.name, id, i + 1)
+            let comicPage = comicPageCreateInsert(connection, currentComicPath, d.name, id, i + 1)
+            comicPages.push(comicPage)
             values.push([id, d.name])
           }
         })
-        createInsert(connection, {
+        let comicPagePromise =  Promise.all(comicPages) // 漫画页promise组
+        let createInsertPromise = createInsert(connection, {
           createSql: `create table ??
           (
             chapterId int primary key auto_increment,
@@ -178,6 +189,7 @@ async function createPool (connection) {
           insertSql: `insert into ?? (comicKey, chapterName)
           values ?`
         }, id + '_chapter', values)
+        await Promise.all([comicPagePromise, createInsertPromise])
       } catch (e) {
         throw new Error(e)
       }
@@ -192,7 +204,7 @@ async function createPool (connection) {
           let src = path.join(chapterPath, f)
           return [id, name, src, chapter]
         })
-        createInsert(connection, {
+        await createInsert(connection, {
           createSql: `create table ??
           (
             comicPageId int primary key auto_increment,
@@ -209,18 +221,19 @@ async function createPool (connection) {
       }
     }
 
-    imgCreateInsert(connection, basePath)
-    comicCreateInsert(connection, basePath)
+    let allQuery = [
+      imgCreateInsert(connection, basePath),
+      comicCreateInsert(connection, basePath)
+    ]
+    await Promise.all(allQuery)
+    await myPool.end()
   } catch (err) {
-    console.log(err)
+    throw new Error(err)
   }
 }
 
-myPool.getConnection().then(connection => {
-  createPool(connection)
-  return connection
-}).then(connection => {
-  myPool.end(connection)
-}).catch (e => {
+myPool.getConnection()
+.then(createPool)
+.catch (e => {
   throw new Error(e)
 })

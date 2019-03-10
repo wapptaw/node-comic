@@ -1,8 +1,14 @@
 const mysql = require('mysql')
 
 class Pool {
-  constructor (option) {
-    this.pool = mysql.createPool(option)
+  constructor ({connectionLimit, host, user, password, database}) {
+    this.pool = mysql.createPool({
+      connectionLimit,
+      host,
+      user,
+      password,
+      database
+    })
   }
 
   getConnection () { // 连接
@@ -19,7 +25,7 @@ class Pool {
     })
   }
 
-  async query (connection, sql, values = null, closeable = false) { // 查询
+  query (connection, sql, values = null, closeable = false) { // 查询
     try {
       return new Promise((resolve, reject) => {
         connection.query(sql, values, (err, rows) => {
@@ -39,9 +45,26 @@ class Pool {
     }
   }
 
-  end (connection) { // 关闭
+  release (connection) { // 释放
+    console.log('释放连接')
     connection.release()
-    console.log('断开连接')
+  }
+
+  end () { // 关闭连接池
+    try {
+      return new Promise((resolve, reject) => {
+        this.pool.end(err => {
+          if (err) {
+            reject(err)
+          } else {
+            console.log('连接池关闭')
+            resolve()
+          }
+        })
+      })
+    } catch (e) {
+      throw new Error(e)
+    }
   }
 }
 
