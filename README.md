@@ -16,8 +16,8 @@
 
 #### 部分展示
 
-![首页]('https://github.com/wapptaw/node-comic/blob/master/lib/readmeImg/home.jpg')
+![首页]('.lib/readmeImg/home.jpg')
 
-![分类]('https://github.com/wapptaw/node-comic/blob/master/lib/readmeImg/category.jpg')
+![分类]('.lib/readmeImg/category.jpg')
 
-![阅读]('https://github.com/wapptaw/node-comic/blob/master/lib/readmeImg/comicPage.jpg')
+![阅读]('.lib/readmeImg/comicPage.jpg')
