@@ -23,8 +23,8 @@
     </section>
     <ul class="side-right">
       {% for item in kinds %}
-      <li class="kind{{' selected' if item.name === kind else ''}}">
-        <a class="a-kind" href="/category?kind={{item.name}}&sort={{sort}}">{{item.name}}</a>
+      <li class="kind{{' selected' if item === kind else ''}}">
+        <a class="a-kind" href="/category?kind={{item}}&sort={{sort}}">{{item}}</a>
       </li>
       {% endfor %}
     </ul>

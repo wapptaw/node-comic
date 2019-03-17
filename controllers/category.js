@@ -1,66 +1,61 @@
+const {comicDataGet, kindGet} = require('../core/api')
+
 var category = function () {
   return async (ctx, next) => {
-    const kind = ctx.query.kind ? ctx.query.kind : '全部'
-    const sort = ctx.query.sort ? ctx.query.sort : 'hot'
-    ctx.render('category.html', {
-      title: '分类',
-      el: 'category',
-      logoImg: '/static/img/logo.jpg',
-      showImg: '/static/img/3.jpg',
-      kind,
-      sort,
-      nav: [
-        {
-          name: '首页',
-          url: '/'
-        },
-        {
-          name: '分类',
-          url: '/category'
-        },
-        {
-          name: '排行',
-          url: '/top'
+    try {
+      let query = ctx.request.query
+      let kind = query.kind ? query.kind : '全部'
+      let sort = query.sort ? query.sort : 'hot'
+      let comicData = await comicDataGet(kind, sort)
+      let comicBooks = comicData.map(v => {
+        return {
+          imgurl: `/db/comicCover?id=${v.comicKey}`,
+          name: v.comicName,
+          tag: v.comicType.split(','),
+          id: v.comicKey
         }
-      ],
-      sortTag: [
-        {
-          name: '按热度',
-          type: 'hot'
-        },
-        {
-          name: '按评分',
-          type: 'score'
-        }
-      ],
-      comicBooks: [ // 需要由计算获得
-        {
-          imgurl: '/static/img/3.jpg',
-          name: '不知道',
-          tag: ['烧酒', '热血', '少年']
-        },
-        {
-          imgurl: '/static/img/4.jpg',
-          name: 'comic_2',
-          tag: ['科幻', '玄幻', '奇幻']
-        }
-      ],
-      kinds: [ // 需要由计算获得
-        {
-          name: '全部'
-        },
-        {
-          name: '科幻'
-        },
-        {
-          name: '少年'
-        },
-        {
-          name: '奇幻'
-        }
-      ]
-    })
-    await next()
+      })
+
+      let cate = await kindGet()
+
+      ctx.render('category.html', {
+        title: '分类',
+        el: 'category',
+        logoImg: '/db/img?name=logo.jpg',
+        showImg: '/db/img?name=3.jpg',
+        kind,
+        sort,
+        nav: [
+          {
+            name: '首页',
+            url: '/'
+          },
+          {
+            name: '分类',
+            url: '/category'
+          },
+          {
+            name: '排行',
+            url: '/top'
+          }
+        ],
+        sortTag: [
+          {
+            name: '按热度',
+            type: 'hot'
+          },
+          {
+            name: '按评分',
+            type: 'score'
+          }
+        ],
+        comicBooks,
+        kinds: ['全部', ...cate]
+      })
+      await next()
+    } catch (e) {
+      throw new Error(e)
+    }
   }
 }
 

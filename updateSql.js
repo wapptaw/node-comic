@@ -104,9 +104,8 @@ async function createPool (connection) {
         let imgPath = path.join(basePath, 'img')
         let imgFiles = await readdir(imgPath)
         let values = imgFiles.map(f => {
-          let name = /^.*(?=\..*$)/.exec(f)[0]
           let src = path.resolve(imgPath, f)
-          return [name, src]
+          return [f, src]
         })
         await createInsert(connection, {
           createSql: `create table ??
@@ -132,7 +131,8 @@ async function createPool (connection) {
           let currentComicPath = path.join(comicPath, d)
           let data = await readFile(path.join(currentComicPath, 'info.json'))
           let info = JSON.parse(data)
-          return [d, info.name, info.type, info.intro, info.author, info.cover, currentComicPath]
+          let cover = path.join(currentComicPath, info.cover)
+          return [d, info.name, info.type, info.intro, info.author, cover, currentComicPath]
         }
         let valueGroup = []
         let chapters = []
@@ -200,9 +200,8 @@ async function createPool (connection) {
         let chapterPath = path.join(currentComicPath, chapter)
         let data = await readdir(chapterPath)
         let values = data.map(f => {
-          let name = /^.*(?=\..*$)/.exec(f)[0]
           let src = path.join(chapterPath, f)
-          return [id, name, src, chapter]
+          return [id, f, src, chapter]
         })
         await createInsert(connection, {
           createSql: `create table ??
@@ -226,7 +225,7 @@ async function createPool (connection) {
       comicCreateInsert(connection, basePath)
     ]
     await Promise.all(allQuery)
-    await myPool.end()
+    myPool.destroy(connection)
   } catch (err) {
     throw new Error(err)
   }

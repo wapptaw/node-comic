@@ -5,12 +5,12 @@
 {% block header %}
 <header class="chapter-header">
   <div class="header-left">
-    <img class="logo-img" src="/static/img/logo.jpg" alt="logo">
+    <img class="logo-img" src="/db/img?name=logo.jpg" alt="logo">
     <span class="title">贝纳洛斯看不懂漫画</span>
   </div>
   <nav class="header-center">
     <a class="link-homepage" href="/">首页&gt;</a>
-    <a class="link-comicName" href="/info?id={{comicId}}&chapterName={{chapterName}}">{{comicId}}&gt;</a>
+    <a class="link-comicName" href="/info?id={{comicId}}">{{comicName}}&gt;</a>
     <span class="chapter-name">{{chapterName}}</span>
   </nav>
   <div class="header-right">设置</div>
@@ -19,8 +19,8 @@
 {% block section %}
 <section class="chapters">
   <div class="chapter-img">
-    {% for item in chapters %}
-    <img class="comic-img" src="/static/comic/{{comicId}}/{{chapterName}}/{{item}}" alt="{{item}}">
+    {% for item in chapterList %}
+    <img class="comic-img" src="/db/comicPage?table={{item.table}}&name={{item.comicPageName}}" alt="{{item.comicPageName}}">
     {% else %}
     漫画失踪了
     {% endfor %}

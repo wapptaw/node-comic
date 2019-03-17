@@ -6,11 +6,11 @@
 <section class="comic-left">
   <section>
     <div>
-      <img src="" alt="cover">
+      <img src="{{cover}}" alt="cover">
       <div>
-        <div>名字</div>
-        <div></div>
-        <p>简介</p>
+        <div>{{comicData.comicName}}</div>
+        <div>作者：{{comicData.comicAuthor}}</div>
+        <p>简介：{{comicData.comicIntro}}</p>
       </div>
     </div>
     <div>
@@ -25,7 +25,9 @@
     <header>章节列表</header>
     <ul>
       {% for item in chapter %}
-      <li></li>
+      <li>
+        <a href="/chapter?id={{comicData.comicKey}}&chapterId={{item.chapterId}}">{{item.chapterName}}</a>
+      </li>
       {% endfor %}
     </ul>
   </section>

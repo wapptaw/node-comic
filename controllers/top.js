@@ -3,8 +3,8 @@ var top = function () {
     ctx.render('top.html', {
       title: '排行榜',
       el: 'top',
-      logoImg: '/static/img/logo.jpg',
-      showImg: '/static/img/3.jpg',
+      logoImg: '/db/img?name=logo.jpg',
+      showImg: '/db/img?name=3.jpg',
       nav: [
         {
           name: '首页',

@@ -66,6 +66,11 @@ class Pool {
       throw new Error(e)
     }
   }
+
+  destroy (connection) { // 关闭并删除连接池
+    connection.destroy()
+    console.log('删除连接池')
+  }
 }
 
 module.exports = Pool

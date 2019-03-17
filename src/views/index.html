@@ -13,12 +13,12 @@
 {% endblock %}
 {% block section %}
 <section class="comic-main">
-  {% for item in category %}
+  {% for item in categoryContent %}
   <section class="comic-show">
     <section class="left-side">
       <header class="category-header">
         <div class="category-name">{{item.categoryName}}</div>
-        <a class="a-more" href="/category?kind={{item.categoryName}}">更多</a>
+        <a class="a-more" href="/category?kind={{item.categoryName}}&sort=hot">更多</a>
       </header>
       {{createFalls(item.comicBooks)}}
     </section>

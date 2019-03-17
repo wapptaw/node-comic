@@ -1,29 +1,35 @@
-const fs = require('fs')
+const {comicGet, chapterNameGet, comicPageList} = require('../core/api')
 
 var chapter = function () {
   return async (ctx, next) => {
-    const comicId = ctx.query.id
-    const chapterName = ctx.query.chapterName
-    let chapters = []
-    let dirGet = new Promise(resolve => {
-      fs.readdir(`./src/static/comic/${comicId}/${chapterName}`, (err, data) => {
-        if (err) {
-          resolve([])
-        } else {
-          fs.Stats()
-          resolve(data)
-        }
+    try {
+      let query = ctx.request.query
+      // 漫画名获取
+      let comicNameData = await comicGet(query.id)
+      let comicName = comicNameData.comicName
+      // 章节名获取
+      let chapterNameData = await chapterNameGet(`${query.id}_chapter`, query.chapterId)
+      let chapterName = chapterNameData.chapterName
+      // 漫画页获取
+      let table = `${query.id}_${query.chapterId}_comicpage`
+      let chapterListData =  await comicPageList(table)
+      let chapterList = chapterListData.map(v => {
+        v.table = table
+        return v
       })
-    })
-    chapters = await dirGet
-    ctx.render('chapter.html', {
-      title: comicId,
-      el: 'chapter',
-      comicId,
-      chapterName,
-      chapters
-    })
-    await next()
+
+      ctx.render('chapter.html', {
+        title: chapterName,
+        el: 'chapter',
+        comicId: query.id,
+        comicName,
+        chapterName,
+        chapterList
+      })
+      await next()
+    } catch (e) {
+      throw new Error(e)
+    }
   }
 }
 
