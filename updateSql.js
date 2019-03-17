@@ -154,7 +154,8 @@ async function createPool (connection) {
             comicSrc varchar(255) not null,
             comicIntro varchar(255) default '无简介。',
             comicAuthor varchar(40) default '未知',
-            comicCover varchar(255)
+            comicCover varchar(255),
+            hot int default 0
           )`,
           insertSql: `insert into ?? (comicKey, comicName, comicType, comicIntro, comicAuthor, comicCover, comicSrc)
           values ?`
@@ -171,11 +172,13 @@ async function createPool (connection) {
         let currentComicPath = path.join(comicPath, id)
         let dirs = await readdir(currentComicPath, {withFileTypes: true})
         let values = [], comicPages = []
-        dirs.forEach((d, i) => {
+        let index = 1 // 章节序号
+        dirs.forEach(d => {
           if (d.isDirectory()) {
-            let comicPage = comicPageCreateInsert(connection, currentComicPath, d.name, id, i + 1)
+            let comicPage = comicPageCreateInsert(connection, currentComicPath, d.name, id, index)
             comicPages.push(comicPage)
             values.push([id, d.name])
+            index++
           }
         })
         let comicPagePromise =  Promise.all(comicPages) // 漫画页promise组
