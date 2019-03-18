@@ -83,11 +83,13 @@ function randomStr (array) {
 async function comicRename (comicPath) {
   try {
     let dirs = [], renames = []
-    let comicDirs = await readdir(comicPath)
+    let comicDirs = await readdir(comicPath, {withFileTypes: true})
     for (let d of comicDirs) {
-      let newName = randomStr(dirs)
-      dirs.push(newName)
-      renames.push(rename(path.join(comicPath, d), path.join(comicPath, newName)))
+      if (d.isDirectory()) {
+        let newName = randomStr(dirs)
+        dirs.push(newName)
+        renames.push(rename(path.join(comicPath, d.name), path.join(comicPath, newName)))
+      }
     }
     await Promise.all(renames)
     return dirs
