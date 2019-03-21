@@ -1,0 +1,125 @@
+.comic-info {
+  padding: .1rem 5%;
+  display: flex;
+  background-color: #f1f1f1;
+}
+.comic-left {
+  width: 75%;
+}
+.comic-detail {
+  padding: 2%;
+  border: 1px solid #dfdfdf;
+  background-color: #fff;
+  box-shadow: 0 0 5px #6b6b6b;
+}
+.comic-intro {
+  display: flex;
+}
+.cover {
+  width: 22%;
+  height: 100%;
+  box-shadow: -5px 5px 5px #6b6b6b;
+}
+.intro-left {
+  margin-left: 2%;
+  padding: 1% 0;
+}
+.comic-name {
+  font-size: .2rem;
+  color: #333;
+}
+.comic-author {
+  font-size: .14rem;
+  color: #5e5e5e;
+  margin-top: .2rem;
+}
+.intro-mes {
+  font-size: .14rem;
+  color: #5e5e5e;
+  margin-top: .2rem;
+}
+.read-button {
+  margin-top: .3rem;
+  display: flex;
+}
+.read-left {
+  width: 22%;
+}
+.read-right {
+  margin-left: 2%;
+  display: flex;
+}
+.read-right a {
+  width: 1.2rem;
+  height: .4rem;
+  display: block;
+  box-sizing: border-box;
+  line-height: .4rem;
+  text-align: center;
+  font-size: .16rem;
+}
+.read-start {
+  color: #f0f0f0;
+  background-color: #279baa;
+}
+.collect {
+  margin-left: .2rem;
+  color: #279baa; 
+  border: 1px solid #5fcde9;
+}
+.chapter-list {
+  margin-top: .1rem;
+  background-color: #fff;
+}
+.chapter-title {
+  padding: 1%;
+  border: 1px solid #dfdfdf;
+  border-left: 5px solid #64e6c9;
+  font-size: .18rem;
+  color: #3a3a3a;
+  box-shadow: 0 0 5px #6b6b6b;
+}
+.ul-chapter {
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  padding: 1%;
+  border: 1px solid #dfdfdf;
+  border-top: 0px;
+  box-shadow: 0 0 5px #6b6b6b;
+}
+.li-chapter {
+  margin: .1rem;
+}
+.chapter-name {
+  font-size: .13rem;
+  color: #3d3d3d;
+}
+.chapter-name:hover {
+  color: #3aa0b3;
+}
+.also-read {
+  margin-top: .1rem;
+  border: 1px solid #dfdfdf;
+  background-color: #fff;
+  box-shadow: 0 0 5px #6b6b6b;
+}
+.comment {
+  margin-top: .1rem;
+  border: 1px solid #dfdfdf;
+  background-color: #fff;
+  box-shadow: 0 0 5px #6b6b6b;
+}
+.comic-right {
+  width: 25%;
+  margin-left: .1rem;
+}
+.author-mes {
+
+}
+.similar {
+  
+}
+.popularity {
+  
+}

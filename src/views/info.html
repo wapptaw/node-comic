@@ -1,49 +1,52 @@
 {% extends "./index.html" %}
 {% block style %}
   <link rel="stylesheet" href="/static/css/showbar.css">
+  <link rel="stylesheet" href="/static/css/info.css">
 {% endblock %}
 {% block section %}
-<section class="comic-left">
-  <section>
-    <div>
-      <img src="{{cover}}" alt="cover">
-      <div>
-        <div>{{comicData.comicName}}</div>
-        <div>作者：{{comicData.comicAuthor}}</div>
-        <p>简介：{{comicData.comicIntro}}</p>
+<section class="comic-info">
+  <section class="comic-left">
+    <section class="comic-detail">
+      <div class="comic-intro">
+        <img class="cover" src="{{cover}}" alt="cover">
+        <div class="intro-left">
+          <div class="comic-name">{{comicData.comicName}}</div>
+          <div class="comic-author">作者：{{comicData.comicAuthor}}</div>
+          <p class="intro-mes">简介：{{comicData.comicIntro}}</p>
+        </div>
       </div>
-    </div>
-    <div>
-      <div></div>
-      <div>
-        <button>开始阅读</button>
-        <button>订阅收藏</button>
+      <div class="read-button">
+        <div class="read-left">点赞</div>
+        <div class="read-right">
+          <a class="read-start" href="/chapter?id={{comicData.comicKey}}&chapterId=1">开始阅读</a>
+          <a class="collect" href="">订阅收藏</a>
+        </div>
       </div>
+    </section>
+    <section class="chapter-list">
+      <header class="chapter-title">章节列表</header>
+      <ul class="ul-chapter">
+        {% for item in chapter %}
+        <li class="li-chapter">
+          <a class="chapter-name" href="/chapter?id={{comicData.comicKey}}&chapterId={{item.chapterId}}">{{item.chapterId}}，{{item.chapterName}}</a>
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+    <section class="also-read">
+      <header>还看过</header>
+      
+    </section>
+    <section class="comment">评论</section>
+  </section>
+  <section class="comic-right">
+    <div class="author-mes">作者信息</div>
+    <div class="similar">
+      <header>同类推荐</header>
+    </div>
+    <div class="popularity">
+      <header>人气排行</header>
     </div>
   </section>
-  <section>
-    <header>章节列表</header>
-    <ul>
-      {% for item in chapter %}
-      <li>
-        <a href="/chapter?id={{comicData.comicKey}}&chapterId={{item.chapterId}}">{{item.chapterName}}</a>
-      </li>
-      {% endfor %}
-    </ul>
-  </section>
-  <section>
-    <header>还看过</header>
-    
-  </section>
-  <section>评论</section>
-</section>
-<section class="comic-right">
-  <div>作者信息</div>
-  <div>
-    <header>同类推荐</header>
-  </div>
-  <div>
-    <header>人气排行</header>
-  </div>
 </section>
 {% endblock %}
